@@ -1,0 +1,38 @@
+version: '3.9'
+
+services:
+  # Application Service
+  application:
+    # Build the application using the Dockerfile located in the 'Golang' directory
+    build:
+      context: Golang
+    # Expose port 8080 from the container to the host machine's port 8080
+    ports:
+      - "8080:8080"
+    # Ensure MySQL container is started before the application container
+    depends_on:
+      - mysql
+
+  # MySQL Service
+  mysql:
+    # Use the latest official MySQL image from Docker Hub
+    image: mysql:latest
+    container_name: "sample_golang_apps_compose"
+    # Expose MySQL port to the host machine (3306)
+    ports:
+      - "3306:3306"
+    # Automatically restart MySQL container in case of failure
+    restart: always
+    # Set the root password and other MySQL configuration using environment variables
+    environment:
+      MYSQL_ROOT_PASSWORD: secretapps
+      MYSQL_DATABASE: sample_golang_apps
+      MYSQL_PASSWORD: secretapps
+    # Optional: Mount a volume for MySQL data persistence, preventing data loss on container restarts
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+# Define named volumes for persistent storage
+volumes:
+  mysql_data:
+    driver: local
